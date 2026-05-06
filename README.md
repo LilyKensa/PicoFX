@@ -18,7 +18,7 @@ So if you're checking this out because you wanna make something yourself, don't 
 
 Alright, that's enough yapping
 
-## How it works
+## How It Works
 
 I couldn't find a way to write shaders, so the rendering is all on CPU, I basically just put a low resolution canvas and draw an image with the same size, so it can be perfectly pixelated. All the work is done on the pixel buffer of that image
 
@@ -57,7 +57,7 @@ The `Entry` class is the main wrapper, it has the screen buffer, tick cycle, and
 
 ---
 
-There's not a lot methods, my code should be self-explanatory, please refer to the `SuperDiscBox` class for example!
+There's not a lot of methods, my code should be self-explanatory, please refer to the `SuperDiscBox` class for example!
 
 ## Known Issues
 
