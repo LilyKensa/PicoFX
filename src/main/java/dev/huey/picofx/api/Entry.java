@@ -25,12 +25,8 @@ public class Entry {
   
   static public Entry instance;
 
-  String name;
-  
-  public Entry(String name) {
+  public Entry() {
     instance = this;
-
-    this.name = name;
   }
   
   Stage stage;
@@ -45,6 +41,7 @@ public class Entry {
   
   StackPane pane;
   Canvas canvas;
+  GraphicsContext ctx;
   
   public PixelBuffer<IntBuffer> currentScreenBuffer() {
     return useScreenB ? screenBufferB : screenBufferA;
@@ -149,8 +146,8 @@ public class Entry {
     screenImageB = new WritableImage(screenBufferA);
     
     canvas = new Canvas();
-    GraphicsContext gc = canvas.getGraphicsContext2D();
-    gc.setImageSmoothing(false);
+    ctx = canvas.getGraphicsContext2D();
+    ctx.setImageSmoothing(false);
     
     pane = new StackPane(canvas);
     pane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
@@ -203,8 +200,7 @@ public class Entry {
     }
     
     currentScreenBuffer().updateBuffer(_ -> null);
-    
-    GraphicsContext ctx = canvas.getGraphicsContext2D();
+
     ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
   }
 }

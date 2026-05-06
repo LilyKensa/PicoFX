@@ -10,7 +10,7 @@ public class PicoFX extends Application {
     launch();
   }
   
-  Entry entry = new Entry("Super Disc Box");
+  Entry entry = new Entry();
   
   @Override
   public void start(Stage stage) {

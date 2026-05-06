@@ -2,6 +2,10 @@ package dev.huey.picofx.game;
 
 import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.bases.*;
+import dev.huey.picofx.api.items.Font;
+import dev.huey.picofx.api.items.Sound;
+import dev.huey.picofx.api.items.Sprite;
+import dev.huey.picofx.api.items.TileMap;
 import dev.huey.picofx.api.modules.Audios;
 import dev.huey.picofx.api.modules.Graphics;
 import dev.huey.picofx.api.modules.Inputs;

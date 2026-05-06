@@ -1,4 +1,4 @@
-package dev.huey.picofx.api.bases;
+package dev.huey.picofx.api.items;
 
 import dev.huey.picofx.api.modules.Utils;
 import javafx.scene.media.AudioClip;

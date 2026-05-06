@@ -1,6 +1,6 @@
 package dev.huey.picofx.api.modules;
 
-import dev.huey.picofx.api.bases.Sound;
+import dev.huey.picofx.api.items.Sound;
 import javafx.scene.media.MediaPlayer;
 
 public class Audios {

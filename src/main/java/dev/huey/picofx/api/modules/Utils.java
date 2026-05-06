@@ -1,6 +1,6 @@
 package dev.huey.picofx.api.modules;
 
-import dev.huey.picofx.api.bases.TileMap;
+import dev.huey.picofx.api.items.TileMap;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 

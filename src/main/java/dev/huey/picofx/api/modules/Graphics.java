@@ -1,9 +1,9 @@
 package dev.huey.picofx.api.modules;
 
 import dev.huey.picofx.api.Entry;
-import dev.huey.picofx.api.bases.Font;
-import dev.huey.picofx.api.bases.Sprite;
-import dev.huey.picofx.api.bases.TileMap;
+import dev.huey.picofx.api.items.Font;
+import dev.huey.picofx.api.items.Sprite;
+import dev.huey.picofx.api.items.TileMap;
 import dev.huey.picofx.api.bases.Vec;
 import javafx.scene.paint.Color;
 

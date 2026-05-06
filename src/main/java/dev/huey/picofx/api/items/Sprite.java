@@ -1,5 +1,6 @@
-package dev.huey.picofx.api.bases;
+package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;

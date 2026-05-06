@@ -1,5 +1,6 @@
-package dev.huey.picofx.api.bases;
+package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.bases.Vec;
 import javafx.scene.image.Image;
 import lombok.Builder;
 import lombok.Getter;
