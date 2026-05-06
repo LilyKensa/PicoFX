@@ -1,9 +1,10 @@
 package dev.huey.zoomie.api;
 
+import dev.huey.zoomie.api.bases.Game;
 import dev.huey.zoomie.api.modules.Config;
 import dev.huey.zoomie.api.modules.Inputs;
 import dev.huey.zoomie.api.modules.Utils;
-import dev.huey.zoomie.game.Game;
+import dev.huey.zoomie.game.SuperDiscBox;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -120,8 +121,10 @@ public class Entry {
   public void start(Stage stage) {
     this.stage = stage;
 
+    game = new SuperDiscBox();
+
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
-    stage.setTitle(name + " - Zoomie");
+    stage.setTitle(game.getName() + " - Zoomie");
 
     Screen screen = Screen.getPrimary();
     stage.setWidth(screen.getBounds().getWidth() * 0.5);
@@ -129,8 +132,6 @@ public class Entry {
 
     stage.setFullScreenExitHint("");
     stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-    
-    game = new Game();
 
     screenBufferA = new PixelBuffer<>(
       Config.size.width(),
