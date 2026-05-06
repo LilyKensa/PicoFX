@@ -1,10 +1,10 @@
-package dev.huey.zoomie.game;
+package dev.huey.picofx.game;
 
-import dev.huey.zoomie.api.Entry;
-import dev.huey.zoomie.api.bases.*;
-import dev.huey.zoomie.api.modules.Audios;
-import dev.huey.zoomie.api.modules.Graphics;
-import dev.huey.zoomie.api.modules.Inputs;
+import dev.huey.picofx.api.Entry;
+import dev.huey.picofx.api.bases.*;
+import dev.huey.picofx.api.modules.Audios;
+import dev.huey.picofx.api.modules.Graphics;
+import dev.huey.picofx.api.modules.Inputs;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import lombok.Builder;

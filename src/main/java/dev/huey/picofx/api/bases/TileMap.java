@@ -1,16 +1,10 @@
-package dev.huey.zoomie.api.bases;
+package dev.huey.picofx.api.bases;
 
-import dev.huey.zoomie.api.modules.Utils;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
+import dev.huey.picofx.api.modules.Utils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Builder(buildMethodName = "internalBuild")

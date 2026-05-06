@@ -1,15 +1,12 @@
-package dev.huey.zoomie.api.bases;
+package dev.huey.picofx.api.bases;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Builder(buildMethodName = "internalBuild")
 public class Font {

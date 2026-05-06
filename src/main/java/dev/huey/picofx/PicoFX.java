@@ -1,13 +1,10 @@
-package dev.huey.zoomie;
+package dev.huey.picofx;
 
-import dev.huey.zoomie.api.Entry;
-import dev.huey.zoomie.api.modules.Utils;
+import dev.huey.picofx.api.Entry;
 import javafx.application.Application;
-import javafx.scene.image.Image;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class Zoomie extends Application {
+public class PicoFX extends Application {
   
   public static void main(String[] args) {
     launch();

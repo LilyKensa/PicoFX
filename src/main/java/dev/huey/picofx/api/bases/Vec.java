@@ -1,4 +1,4 @@
-package dev.huey.zoomie.api.bases;
+package dev.huey.picofx.api.bases;
 
 public class Vec {
   

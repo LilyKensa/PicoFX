@@ -1,13 +1,11 @@
-package dev.huey.zoomie.api.modules;
+package dev.huey.picofx.api.modules;
 
-import dev.huey.zoomie.api.Entry;
-import dev.huey.zoomie.api.bases.Font;
-import dev.huey.zoomie.api.bases.Sprite;
-import dev.huey.zoomie.api.bases.TileMap;
-import dev.huey.zoomie.api.bases.Vec;
+import dev.huey.picofx.api.Entry;
+import dev.huey.picofx.api.bases.Font;
+import dev.huey.picofx.api.bases.Sprite;
+import dev.huey.picofx.api.bases.TileMap;
+import dev.huey.picofx.api.bases.Vec;
 import javafx.scene.paint.Color;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.*;
 

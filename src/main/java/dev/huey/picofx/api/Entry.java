@@ -1,10 +1,10 @@
-package dev.huey.zoomie.api;
+package dev.huey.picofx.api;
 
-import dev.huey.zoomie.api.bases.Game;
-import dev.huey.zoomie.api.modules.Config;
-import dev.huey.zoomie.api.modules.Inputs;
-import dev.huey.zoomie.api.modules.Utils;
-import dev.huey.zoomie.game.SuperDiscBox;
+import dev.huey.picofx.api.bases.Game;
+import dev.huey.picofx.api.modules.Config;
+import dev.huey.picofx.api.modules.Inputs;
+import dev.huey.picofx.api.modules.Utils;
+import dev.huey.picofx.game.SuperDiscBox;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -124,7 +124,7 @@ public class Entry {
     game = new SuperDiscBox();
 
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
-    stage.setTitle(game.getName() + " - Zoomie");
+    stage.setTitle(game.getName() + " - PicoFX");
 
     Screen screen = Screen.getPrimary();
     stage.setWidth(screen.getBounds().getWidth() * 0.5);

@@ -27,8 +27,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 application {
-    mainModule = 'dev.huey.zoomie'
-    mainClass = 'dev.huey.zoomie.Zoomie'
+    mainModule = 'dev.huey.picofx'
+    mainClass = 'dev.huey.picofx.PicoFX'
 }
 
 javafx {

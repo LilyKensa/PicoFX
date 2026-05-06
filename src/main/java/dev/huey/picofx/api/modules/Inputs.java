@@ -1,4 +1,4 @@
-package dev.huey.zoomie.api.modules;
+package dev.huey.picofx.api.modules;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

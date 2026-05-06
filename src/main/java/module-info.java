@@ -1,4 +1,4 @@
-module dev.huey.zoomie {
+module dev.huey.picofx {
   requires static lombok;
 
   requires java.desktop;
@@ -7,7 +7,7 @@ module dev.huey.zoomie {
   requires javafx.fxml;
   requires javafx.media;
 
-  opens dev.huey.zoomie to javafx.fxml;
+  opens dev.huey.picofx to javafx.fxml;
   
-  exports dev.huey.zoomie;
+  exports dev.huey.picofx;
 }

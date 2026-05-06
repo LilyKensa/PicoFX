@@ -1,4 +1,4 @@
-package dev.huey.zoomie.api.modules;
+package dev.huey.picofx.api.modules;
 
 public class Config {
   public record ScreenConfig(

@@ -1,6 +1,6 @@
-package dev.huey.zoomie.api.bases;
+package dev.huey.picofx.api.bases;
 
-import dev.huey.zoomie.api.modules.Utils;
+import dev.huey.picofx.api.modules.Utils;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
