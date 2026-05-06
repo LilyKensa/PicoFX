@@ -10,6 +10,18 @@ public class Audios {
   }
 
   static MediaPlayer player = null;
+  static boolean isPausedByGame = false;
+
+  static public void onPauseStateChange(boolean paused) {
+    if (paused) {
+      pause();
+      isPausedByGame = true;
+    }
+    else if (isPausedByGame) {
+      resume();
+      isPausedByGame = false;
+    }
+  }
   
   static public void music(Sound sound, int times) {
     stop();
@@ -20,6 +32,14 @@ public class Audios {
 
   static public void music(Sound sound) {
     music(sound, MediaPlayer.INDEFINITE);
+  }
+
+  static public void pause() {
+    player.pause();
+  }
+
+  static public void resume() {
+    player.play();
   }
 
   static public void stop() {

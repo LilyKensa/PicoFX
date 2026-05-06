@@ -1,6 +1,7 @@
 package dev.huey.picofx.api;
 
 import dev.huey.picofx.api.bases.Game;
+import dev.huey.picofx.api.modules.Audios;
 import dev.huey.picofx.api.modules.Config;
 import dev.huey.picofx.api.modules.Inputs;
 import dev.huey.picofx.api.modules.Utils;
@@ -70,6 +71,8 @@ public class Entry {
     switch (ev.getCode()) {
       case ESCAPE -> {
         paused = !paused;
+
+        Audios.onPauseStateChange(paused);
       }
       case F11 -> {
         stage.setFullScreen(!stage.isFullScreen());

@@ -1,8 +1,8 @@
 # PicoFX
 
-My another attempt at recreating [Pico-8](https://www.lexaloffle.com/pico-8.php) on other platforms.
+My another attempt at recreating [Pico-8](https://www.lexaloffle.com/pico-8.php) on other platforms
 
-Well, actually it's not even a console like Pico-8, but at least it can run games :)
+Well, actually it's just the runner, no console, no editor :)
 
 ---
 
