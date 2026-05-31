@@ -1,5 +1,6 @@
 package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
@@ -12,8 +13,12 @@ public class Sound {
   @Getter
   AudioClip clip;
 
+  static public Sound load(String namespace, String path) {
+    return new Sound(Utils.loadSound("/assets/%s/audios/%s.wav".formatted(namespace, path)));
+  }
+
   static public Sound load(String path) {
-    return new Sound(Utils.loadSound("/assets/audios/%s.wav".formatted(path)));
+    return load(Entry.instance.getId(), path);
   }
 
   public Sound(Media media) {

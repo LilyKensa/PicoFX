@@ -1,16 +1,21 @@
 package dev.huey.picofx;
 
 import dev.huey.picofx.api.Entry;
+import dev.huey.picofx.game.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class PicoFX extends Application {
-  
-  public static void main(String[] args) {
+  static void main(String[] args) {
     launch();
   }
-  
-  Entry entry = new Entry();
+
+  Entry entry = new Entry("super-disc-box")
+    .load(new SuperDiscBox());
+  // Entry entry = new Entry("celeste")
+  //   .load(new Celeste());
+  // Entry entry = new Entry("one-circle-demake")
+  //   .load(new OneCircleDemake());
   
   @Override
   public void start(Stage stage) {

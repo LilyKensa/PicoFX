@@ -1,5 +1,6 @@
 package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.bases.Vec;
 import javafx.scene.image.Image;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class Font {
 
   public static Font pico8() {
     return builder()
+      .namespace("_builtin")
       .source("pico-8")
       .gridWidth(8).gridHeight(8)
       .charWidth(7).charHeight(5)
@@ -46,7 +48,9 @@ public class Font {
       ))
       .build();
   }
-  
+
+  @Builder.Default
+  String namespace = Entry.instance.getId();
   String source;
   
   @Getter
@@ -58,7 +62,7 @@ public class Font {
   
   public void init() {
     Sprite sheet = new Sprite(new Image(
-      Sprite.class.getResource("/assets/fonts/%s.png".formatted(source)).toExternalForm()
+      Sprite.class.getResource("/assets/%s/fonts/%s.png".formatted(namespace, source)).toExternalForm()
     ));
 
     int index = 0;

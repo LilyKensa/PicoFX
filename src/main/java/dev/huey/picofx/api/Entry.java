@@ -19,6 +19,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.nio.IntBuffer;
 
@@ -26,13 +27,21 @@ public class Entry {
   
   static public Entry instance;
 
-  public Entry() {
+  @Getter
+  String id;
+  Game game;
+
+  public Entry(String id) {
     instance = this;
+    this.id = id;
+  }
+
+  public Entry load(Game game) {
+    this.game = game;
+    return this;
   }
   
   Stage stage;
-  
-  Game game;
   
   int upscaleRatio;
   
@@ -53,7 +62,6 @@ public class Entry {
   }
   
   void onResize(double windowWidth, double windowHeight) {
-    
     upscaleRatio = (int) Math.min(
       windowWidth / Config.size.width(),
       windowHeight / Config.size.height()
@@ -120,8 +128,6 @@ public class Entry {
   
   public void start(Stage stage) {
     this.stage = stage;
-
-    game = new SuperDiscBox();
 
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
     stage.setTitle(game.getName() + " - PicoFX");

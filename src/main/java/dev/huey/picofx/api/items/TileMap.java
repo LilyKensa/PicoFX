@@ -1,5 +1,6 @@
 package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.modules.Utils;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,9 @@ public class TileMap {
     }
   }
 
+
+  @Builder.Default
+  String namespace = Entry.instance.getId();
   String source;
 
   @Getter
@@ -32,6 +36,6 @@ public class TileMap {
   List<List<Sprite>> grid = new ArrayList<>();
 
   public void init() {
-    tiles = Utils.loadText("/assets/tiles/%s.txt".formatted(source)).split("\n");
+    tiles = Utils.loadText("/assets/%s/tiles/%s.txt".formatted(namespace, source)).split("\n");
   }
 }

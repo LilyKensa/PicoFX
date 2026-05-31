@@ -18,13 +18,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SuperDiscBox implements Game {
-
-  static public SuperDiscBox instance;
-
-  public SuperDiscBox() {
-    instance = this;
-  }
-
   @Override
   public String getName() {
     return "Super Disc Box";

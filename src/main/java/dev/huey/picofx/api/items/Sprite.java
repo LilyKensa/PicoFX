@@ -1,5 +1,6 @@
 package dev.huey.picofx.api.items;
 
+import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.scene.image.Image;
@@ -11,9 +12,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Sprite {
-  
+  static public Sprite load(String namespace, String path) {
+    return new Sprite(Utils.loadImage("/assets/%s/sprites/%s.png".formatted(namespace, path)));
+  }
+
   static public Sprite load(String path) {
-    return new Sprite(Utils.loadImage("/assets/sprites/%s.png".formatted(path)));
+    return load(Entry.instance.getId(), path);
   }
 
   @Getter
