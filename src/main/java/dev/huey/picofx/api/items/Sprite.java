@@ -17,7 +17,7 @@ public class Sprite {
   }
 
   static public Sprite load(String path) {
-    return load(Entry.instance.getId(), path);
+    return load(Entry.fetchGameId(), path);
   }
 
   @Getter

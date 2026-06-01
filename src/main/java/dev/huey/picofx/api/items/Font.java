@@ -50,7 +50,7 @@ public class Font {
   }
 
   @Builder.Default
-  String namespace = Entry.instance.getId();
+  String namespace = Entry.fetchGameId();
   String source;
   
   @Getter

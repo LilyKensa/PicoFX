@@ -11,12 +11,9 @@ public class PicoFX extends Application {
     launch();
   }
 
-  // Entry entry = new Entry("super-disc-box")
-  //   .load(new SuperDiscBox());
-  // Entry entry = new Entry("celeste")
-  //   .load(new Celeste());
-  Entry entry = new Entry("one-circle-demake")
-    .load(new OneCircleDemake());
+  Entry entry = new Entry()
+    .addGame(1, "super-disc-box", SuperDiscBox.class)
+    .addGame(2, "one-circle-demake", OneCircleDemake.class);
   
   @Override
   public void start(Stage stage) {

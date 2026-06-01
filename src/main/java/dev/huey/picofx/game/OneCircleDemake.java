@@ -4,8 +4,10 @@ import dev.huey.picofx.api.Entry;
 import dev.huey.picofx.api.bases.Game;
 import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.items.Font;
+import dev.huey.picofx.api.items.Sound;
 import dev.huey.picofx.api.items.Sprite;
 import dev.huey.picofx.api.items.TileMap;
+import dev.huey.picofx.api.modules.Audios;
 import dev.huey.picofx.api.modules.Graphics;
 import dev.huey.picofx.api.modules.Inputs;
 import javafx.scene.input.KeyCode;
@@ -13,10 +15,16 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OneCircleDemake implements Game {
+  @Override
+  public String getId() {
+    return "one-circle-demake";
+  }
+
   @Override
   public String getName() {
     return "One Circle Demake";
@@ -26,12 +34,24 @@ public class OneCircleDemake implements Game {
     return Entry.instance.time() / 1000_000_000d;
   }
 
-  void sfx(int id) {
+  Sound[] sounds = new Sound[30];
 
+  void sfx(int index) {
+    Audios.emit(sounds[index]);
   }
 
-  void music(int id) {
+  void music(int index) {
+    Audios.music(sounds[index]);
+  }
 
+  void loadSounds() {
+    for (int i = 0; i < 4; ++i) {
+      sounds[i] = Sound.load("music_" + i);
+    }
+
+    for (int i = 10; i < 30; ++i) {
+      sounds[i] = Sound.load("sfx_" + i);
+    }
   }
   
   Font font = Font.pico8();
@@ -146,6 +166,7 @@ public class OneCircleDemake implements Game {
 
   @Override
   public void start() {
+    loadSounds();
     Graphics.font(font);
 
     bg.start();
@@ -599,8 +620,8 @@ public class OneCircleDemake implements Game {
               particles.radiate(tarBob.drawPos, colors.get(obj.index).primary, tarBob.size);
               for (int j = 0; j < 12; ++j) {
                 particles.ball(
-                  obj.pos.add(Math.random() * 4 - 2, Math.random() * 4 - 2),
-                  colors.get(obj.index).primary,
+                  tarBob.drawPos.add(Math.random() * 4 - 2, Math.random() * 4 - 2),
+                  colors.get(movBob.index).primary,
                   1 + Math.random() * 3,
                   movBob.vel.multiply(0.46)
                     .add(Math.random() * 1.2 - 0.6, Math.random() * 1.2 - 0.6),
@@ -641,7 +662,7 @@ public class OneCircleDemake implements Game {
             } else if (movBob.target instanceof Spacer tarSpa) {
               for (int j = 0; j < 12; ++j) {
                 particles.ball(
-                  obj.pos.add(Math.random() * 4 - 2, Math.random() * 4 - 2),
+                  movBob.target.drawPos.add(Math.random() * 4 - 2, Math.random() * 4 - 2),
                   palette[7],
                   1 + Math.random() * 3,
                   movBob.vel.multiply(0.46)
@@ -672,12 +693,10 @@ public class OneCircleDemake implements Game {
             solObj.size += 0.18 * (10 - solObj.size);
           }
 
-          if (solObj instanceof Bob bob) {
-            double maxSize = bob.isStart ? 10.4 : 8;
+          double maxSize = solObj instanceof Bob bob && bob.isStart ? 10.4 : 8;
 
-            if (bob.size > maxSize) {
-              bob.size = Math.max(bob.size * 0.96, maxSize);
-            }
+          if (solObj.size > maxSize) {
+            solObj.size = Math.max(solObj.size * 0.96, maxSize);
           }
         }
       }
@@ -921,8 +940,6 @@ public class OneCircleDemake implements Game {
         }
       }
 
-      System.out.println("3");
-
       if (isSwiping) {
         if (dir.isZero()) return;
 
@@ -938,15 +955,12 @@ public class OneCircleDemake implements Game {
           }
         }
       }
-      System.out.println("2");
 
       if (startBob == null) return;
 
       Vec pos = startBob.pos.clone();
 
       boolean found = false, blocked = false;
-
-      System.out.println("1");
 
       do {
         pos = pos.add(dir);
@@ -1675,7 +1689,7 @@ public class OneCircleDemake implements Game {
         );
 
         printNumber(
-          i,
+          i + 1,
           Vec.of(16 + x * 16, 26 + y * 10),
           palette[i <= levels.max ? 7 : 10]
         );
@@ -1856,16 +1870,18 @@ public class OneCircleDemake implements Game {
       bp.pos = pos.clone();
       bp.col = col;
       bp.r = r;
-      bp.vel = vel.clone();
       bp.dr = dr;
+      bp.vel = vel.clone();
       bp.noShadow = noShadow;
+
+      list.add(bp);
     }
 
     void ball(Vec pos, Color col, double r, Vec vel, double dr) {
       ball(pos, col, r, vel, dr, false);
     }
     void ball(Vec pos, Color col, double r, Vec vel) {
-      ball(pos, col, r, vel, -0.06, false);
+      ball(pos, col, r, vel, -0.06);
     }
 
     void update() {

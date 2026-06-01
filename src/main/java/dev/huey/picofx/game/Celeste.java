@@ -12,6 +12,11 @@ import java.util.List;
 
 public class Celeste implements Game {
   @Override
+  public String getId() {
+    return "celeste";
+  }
+
+  @Override
   public String getName() {
     return "Celeste";
   }

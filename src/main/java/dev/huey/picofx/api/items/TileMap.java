@@ -23,7 +23,7 @@ public class TileMap {
 
 
   @Builder.Default
-  String namespace = Entry.instance.getId();
+  String namespace = Entry.fetchGameId();
   String source;
 
   @Getter

@@ -21,6 +21,11 @@ import java.util.function.Supplier;
 
 public class SuperDiscBox implements Game {
   @Override
+  public String getId() {
+    return "super-disc-box";
+  }
+
+  @Override
   public String getName() {
     return "Super Disc Box";
   }

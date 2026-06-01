@@ -18,7 +18,27 @@ So if you're checking this out because you wanna make something yourself, don't 
 
 Alright, that's enough yapping
 
-## How It Works
+## How to Play
+
+Just get the app running, and you can enjoy the games!
+
+### Keybindings
+
+| Key                | Usage                |
+|--------------------|----------------------|
+| `Esc`              | Pause / Resume       |
+| `F11`              | Toggle fullscreen    |
+| `Ctrl` + `R`       | Reload the game      |
+| `Ctrl` + `C`       | Stop the game        |
+| `Ctrl` + Any Digit | Choose between games |
+
+The current games are:
+
+- `1`: [Super Disc Box](https://www.lexaloffle.com/bbs/?tid=40111) by Farbs
+- `2`: [One Circle Demake](https://www.lexaloffle.com/bbs/?tid=147606) by Lily Kensa / [originally](https://store.steampowered.com/app/1473840/) by
+  r3nsen
+
+## Explanation
 
 I couldn't find a way to write shaders, so the rendering is all on CPU, I basically just put a low resolution canvas and draw an image with the same size, so it can be perfectly pixelated. All the work is done on the pixel buffer of that image
 
@@ -62,7 +82,9 @@ There's not a lot of methods, my code should be self-explanatory, please refer t
 ## Known Issues
 
 - Rare screen flickering
+- Sound effects won't pause properly when the game is being paused
 
 ## To-do List
 
+- Better game loading system / console
 - Add controller support

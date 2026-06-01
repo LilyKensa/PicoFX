@@ -18,7 +18,7 @@ public class Sound {
   }
 
   static public Sound load(String path) {
-    return load(Entry.instance.getId(), path);
+    return load(Entry.fetchGameId(), path);
   }
 
   public Sound(Media media) {

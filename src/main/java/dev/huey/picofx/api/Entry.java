@@ -7,6 +7,7 @@ import dev.huey.picofx.api.modules.Config;
 import dev.huey.picofx.api.modules.Inputs;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -14,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -23,23 +25,33 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.IntBuffer;
 
 public class Entry {
-  
   static public Entry instance;
 
-  @Getter
-  String id;
-  Game game;
-
-  public Entry(String id) {
-    instance = this;
-    this.id = id;
+  static public String fetchGameId() {
+    GameSlot slot = instance.slots[instance.slot];
+    return slot == null ? "_null" : slot.id;
   }
 
-  public Entry load(Game game) {
-    this.game = game;
+  @Getter
+  Game game;
+
+  record GameSlot(String id, Class<? extends Game> game) {
+
+  }
+
+  GameSlot[] slots = new GameSlot[10];
+  int slot = 1;
+
+  public Entry() {
+    instance = this;
+  }
+
+  public Entry addGame(int slot, String id, Class<? extends Game> gameClass) {
+    slots[slot] = new GameSlot(id, gameClass);
     return this;
   }
   
@@ -102,6 +114,34 @@ public class Entry {
   
   void onKeyUp(KeyEvent ev) {
     Inputs.onKeyUp(ev);
+
+    if (ev.isControlDown()) {
+      switch (ev.getCode()) {
+        case R -> {
+          killClock();
+          initClock();
+          startClock();
+        }
+        case C -> {
+          killClock();
+          ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        }
+      }
+
+      if (
+        ev.getCode().getCode() >= KeyCode.DIGIT1.getCode() &&
+        ev.getCode().getCode() <= KeyCode.DIGIT9.getCode()
+      ) {
+        int index = ev.getCode().getCode() - KeyCode.DIGIT0.getCode();
+
+        killClock();
+        ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        slot = index;
+
+        initClock();
+        startClock();
+      }
+    }
   }
 
   void onMouseMove(MouseEvent ev) {
@@ -148,10 +188,38 @@ public class Entry {
     }
   }
   
-  TickAnimationTimer tickTimer = new TickAnimationTimer();
+  TickAnimationTimer tickTimer;
+
+  void initClock() {
+    if (slots[slot] == null) return;
+
+    try {
+      game = slots[slot].game.getDeclaredConstructor().newInstance();
+    }
+    catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    }
+    tickTimer = new TickAnimationTimer();
+  }
+
+  void startClock() {
+    if (game == null || tickTimer == null) return;
+
+    game.start();
+    tickTimer.start();
+  }
+
+  void killClock() {
+    if (tickTimer == null) return;
+
+    tickTimer.stop();
+    origin = -1;
+  }
   
   public void start(Stage stage) {
     this.stage = stage;
+
+    initClock();
 
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
     stage.setTitle(game.getName() + " - PicoFX");
@@ -217,10 +285,8 @@ public class Entry {
     
     stage.setScene(scene);
     stage.show();
-    
-    game.start();
-    
-    tickTimer.start();
+
+    startClock();
   }
   
   void update() {

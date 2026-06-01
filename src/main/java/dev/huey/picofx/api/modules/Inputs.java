@@ -22,7 +22,7 @@ public class Inputs {
     keyTimers.remove(ev.getCode());
   }
 
-  static public Vec mousePos = Vec.zero();
+  static public Vec mousePos = Vec.of(-24, -24);
 
   static public Vec cursor() {
     return mousePos.clone();
