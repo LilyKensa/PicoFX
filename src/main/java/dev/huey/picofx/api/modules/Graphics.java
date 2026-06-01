@@ -1,13 +1,16 @@
 package dev.huey.picofx.api.modules;
 
 import dev.huey.picofx.api.Entry;
+import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.items.Font;
 import dev.huey.picofx.api.items.Sprite;
 import dev.huey.picofx.api.items.TileMap;
-import dev.huey.picofx.api.bases.Vec;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Graphics {
   

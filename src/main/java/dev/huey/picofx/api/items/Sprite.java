@@ -53,9 +53,16 @@ public class Sprite {
       width
     );
   }
-  
+
   public Sprite flag(int flag) {
     flags.add(flag);
+    return this;
+  }
+
+  public Sprite flag(int... list) {
+    for (int f : list) {
+      flags.add(f);
+    }
     return this;
   }
   
@@ -70,6 +77,14 @@ public class Sprite {
     }
     
     return new Sprite(this, v, width, height);
+  }
+
+  public Sprite slice(Vec v, int width, int height) {
+    return slice(v.toInt(), width, height);
+  }
+
+  public Sprite slice(Vec v, Vec s) {
+    return slice(v, (int) s.x, (int) s.y);
   }
 
   public int getPixel(Vec.Int v) {

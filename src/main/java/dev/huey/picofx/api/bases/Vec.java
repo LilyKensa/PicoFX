@@ -1,5 +1,7 @@
 package dev.huey.picofx.api.bases;
 
+import java.util.Objects;
+
 public class Vec {
   
   static public class Int {
@@ -84,6 +86,20 @@ public class Vec {
   public Int toInt() {
     return new Int(x, y);
   }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(x, y);
+  }
+
+  @Override
+  public boolean equals(Object that) {
+    if (this == that) return true;
+    if (that == null || getClass() != that.getClass()) return false;
+
+    Vec vec = (Vec) that;
+    return Double.compare(vec.x, x) == 0 && Double.compare(vec.y, y) == 0;
+  }
   
   public Vec add(Vec that) {
     return new Vec(this.x + that.x, this.y + that.y);
@@ -108,6 +124,20 @@ public class Vec {
   public Vec divide(double ratio) {
     return multiply(1 / ratio);
   }
+
+  public Vec mod(Vec grid) {
+    if (grid.x == 0 && grid.y == 0) {
+      return clone();
+    }
+    else if (grid.x == 0) {
+      return new Vec(x, y % grid.y);
+    }
+    else if (grid.y == 0) {
+      return new Vec(x % grid.x, y);
+    }
+
+    return new Vec(x % grid.x, y % grid.y);
+  }
   
   public double dot(Vec that) {
     return this.x * that.x + this.y * that.y;
@@ -127,6 +157,10 @@ public class Vec {
   
   public double angle() {
     return angle(zero());
+  }
+
+  public boolean isZero() {
+    return lenSq() < 1e-9;
   }
   
   public boolean isUnit() {
@@ -162,9 +196,17 @@ public class Vec {
   public double distSq(Vec that) {
     return minus(that).lenSq();
   }
+
+  public double distSq(double x, double y) {
+    return distSq(new Vec(x, y));
+  }
   
   public double dist(Vec that) {
     return Math.sqrt(distSq(that));
+  }
+
+  public double dist(double x, double y) {
+    return dist(new Vec(x, y));
   }
   
   public double approxDist(Vec that) {

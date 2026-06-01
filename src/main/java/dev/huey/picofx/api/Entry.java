@@ -1,12 +1,13 @@
 package dev.huey.picofx.api;
 
 import dev.huey.picofx.api.bases.Game;
+import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.modules.Audios;
 import dev.huey.picofx.api.modules.Config;
 import dev.huey.picofx.api.modules.Inputs;
 import dev.huey.picofx.api.modules.Utils;
-import dev.huey.picofx.game.SuperDiscBox;
 import javafx.animation.AnimationTimer;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,6 +16,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
@@ -42,16 +44,26 @@ public class Entry {
   }
   
   Stage stage;
-  
+
+  @Getter
   int upscaleRatio;
   
   PixelBuffer<IntBuffer> screenBufferA, screenBufferB;
   WritableImage screenImageA, screenImageB;
   boolean useScreenB = false;
-  
+
+  Scene scene;
   StackPane pane;
+
   Canvas canvas;
   GraphicsContext ctx;
+
+  public Vec getPanePos() {
+    return Vec.of(
+      scene.getWidth() - Config.size.width() * upscaleRatio,
+      scene.getHeight() - Config.size.height() * upscaleRatio
+    ).divide(2);
+  }
   
   public PixelBuffer<IntBuffer> currentScreenBuffer() {
     return useScreenB ? screenBufferB : screenBufferA;
@@ -90,6 +102,18 @@ public class Entry {
   
   void onKeyUp(KeyEvent ev) {
     Inputs.onKeyUp(ev);
+  }
+
+  void onMouseMove(MouseEvent ev) {
+    Inputs.onMouseMove(ev);
+  }
+
+  void onMouseDown(MouseEvent ev) {
+    Inputs.onMouseDown(ev);
+  }
+
+  void onMouseUp(MouseEvent ev) {
+    Inputs.onMouseUp(ev);
   }
 
   boolean paused;
@@ -160,6 +184,7 @@ public class Entry {
     
     pane = new StackPane(canvas);
     pane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+    pane.setCursor(Cursor.NONE);
     
     canvas.widthProperty().bind(pane.widthProperty());
     canvas.heightProperty().bind(pane.heightProperty());
@@ -169,7 +194,7 @@ public class Entry {
     StackPane root = new StackPane(pane);
     root.setStyle("-fx-background-color: black;");
     
-    Scene scene = new Scene(root, canvas.getWidth(), canvas.getHeight());
+    scene = new Scene(root, canvas.getWidth(), canvas.getHeight());
     
     scene.widthProperty().addListener((
       _,
@@ -182,8 +207,13 @@ public class Entry {
       val
     ) -> onResize(scene.getWidth(), val.doubleValue()));
     
-    scene.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyDown);
-    scene.addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyUp);
+    scene.setOnKeyPressed(this::onKeyDown);
+    scene.setOnKeyReleased(this::onKeyUp);
+
+    scene.setOnMouseMoved(this::onMouseMove);
+    scene.setOnMouseDragged(this::onMouseMove);
+    scene.setOnMousePressed(this::onMouseDown);
+    scene.setOnMouseReleased(this::onMouseUp);
     
     stage.setScene(scene);
     stage.show();

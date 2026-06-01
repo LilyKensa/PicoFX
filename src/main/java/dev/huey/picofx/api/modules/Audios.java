@@ -35,10 +35,12 @@ public class Audios {
   }
 
   static public void pause() {
+    if (player == null) return;
     player.pause();
   }
 
   static public void resume() {
+    if (player == null) return;
     player.play();
   }
 

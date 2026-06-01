@@ -1,7 +1,9 @@
 package dev.huey.picofx.game;
 
 import dev.huey.picofx.api.Entry;
-import dev.huey.picofx.api.bases.*;
+import dev.huey.picofx.api.bases.Game;
+import dev.huey.picofx.api.bases.Lifecycle;
+import dev.huey.picofx.api.bases.Vec;
 import dev.huey.picofx.api.items.Font;
 import dev.huey.picofx.api.items.Sound;
 import dev.huey.picofx.api.items.Sprite;
@@ -278,7 +280,7 @@ public class SuperDiscBox implements Game {
     initSplashScreen();
   }
 
-  static Color[] palette = {
+  static final Color[] palette = {
     Color.web("#000000ff"), Color.web("#422136ff"),
     Color.web("#7e2553ff"), Color.web("#742f29ff"),
     Color.web("#ff6e59ff"), Color.web("#5f574fff"),
