@@ -14,7 +14,7 @@ Not gonna lie, it's just ridiculous. I mean, this shit is released at May 2007, 
 
 I couldn't help but think that the teachers are too lazy to learn anything so they just keep on teaching the same thing every year...
 
-So if you're checking this out because you wanna make something yourself, don't choose JavaFX, I 100% do not recommend. Use SvelteKit + Tauri if you wanna make a frontend app, Unity if you wanna make a game
+So if you're checking this out because you wanna make something yourself, don't choose JavaFX, I 100% do not recommend. Use `SvelteKit` + `Tauri` if you wanna make a frontend app, `Unity` or `Unreal Engine` if you wanna make a game
 
 Alright, that's enough yapping
 

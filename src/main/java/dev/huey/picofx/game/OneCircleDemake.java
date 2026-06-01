@@ -221,13 +221,19 @@ public class OneCircleDemake implements Game {
     List<GameTask> list = new ArrayList<>();
 
     void update() {
+      List<Runnable> currentTasks = new ArrayList<>();
+
       list.removeIf(item -> {
         item.ticks--;
         if (item.ticks > 0) return false;
 
-        item.task.run();
+        currentTasks.add(item.task);
         return true;
       });
+
+      for (Runnable task : currentTasks) {
+        task.run();
+      }
     }
 
     void add(Runnable task, int ticks) {
@@ -323,6 +329,7 @@ public class OneCircleDemake implements Game {
         case TITLE -> title.onMouseUp();
         case GAME -> objects.onMouseUp();
         case MENU -> menu.onMouseUp();
+        case CREDITS -> credits.onMouseUp();
       }
     }
 
@@ -503,9 +510,6 @@ public class OneCircleDemake implements Game {
     Vec vel = Vec.zero();
   }
 
-  Sprite reloadSpr = sheet.slice(Vec.of(81, 25), 5, 6);
-  Sprite menuSpr = sheet.slice(Vec.of(89, 25), 5, 6);
-
   class GameObjects {
     static class ObjectColor {
       Color primary, secondary;
@@ -542,7 +546,7 @@ public class OneCircleDemake implements Game {
 
       if (obj instanceof Bob bob) {
         bob.wiggle = Vec.zero();
-        bob.wiggleVel = wiggle;
+        bob.wiggleVel = wiggle.clone();
       }
 
       list.add(obj);
@@ -567,8 +571,7 @@ public class OneCircleDemake implements Game {
       list.removeIf(obj -> !obj.active);
 
       if (Inputs.keyOnce(KeyCode.C)) {
-        scene = GameScene.MENU;
-        sfx(21);
+        menu.open();
         return;
       }
 
@@ -582,7 +585,8 @@ public class OneCircleDemake implements Game {
 
       boolean skipBobsUpdate = false;
 
-      for (BaseObject obj : list) {
+      for (int i = 0; i < list.size(); ++i) {
+        BaseObject obj = list.get(i);
         if (!obj.active) continue;
 
         if (obj instanceof MovingBob movBob) {
@@ -612,7 +616,8 @@ public class OneCircleDemake implements Game {
 
             if (movBob.target instanceof Void) {
               add(new Bob(), movBob.target.pos, movBob.index, 8, movBob.vel.multiply(0.45));
-            } else if (movBob.target instanceof Bob tarBob) {
+            }
+            else if (movBob.target instanceof Bob tarBob) {
               tarBob.index--;
               tarBob.wiggle = Vec.zero();
               tarBob.wiggleVel = movBob.vel.multiply(1.1);
@@ -748,7 +753,7 @@ public class OneCircleDemake implements Game {
             bob.wiggle = bob.wiggle.add(bob.wiggleVel);
             bob.wiggleVel = bob.wiggleVel.multiply(0.82);
 
-            if (bob.wiggle.inRange(0.1) || bob.wiggleVel.inRange(0.1)) {
+            if (bob.wiggle.inRange(0.1) && bob.wiggleVel.inRange(0.1)) {
               bob.wiggle = Vec.zero();
               bob.wiggleVel = Vec.zero();
             }
@@ -811,14 +816,8 @@ public class OneCircleDemake implements Game {
         }
       }
 
-      Graphics.sprite(
-        reloadSpr,
-        Vec.of(115, 1).add(bg.shake.pos)
-      );
-      Graphics.sprite(
-        menuSpr,
-        Vec.of(122, 1).add(bg.shake.pos)
-      );
+      menu.drawReloadSpr();
+      menu.drawMenuSpr();
     }
 
     void onMouseUp() {
@@ -829,11 +828,7 @@ public class OneCircleDemake implements Game {
         return;
       }
 
-      if (cursorStartAndEndIn(Vec.of(120, 0), Vec.of(8, 8))) {
-        scene = GameScene.MENU;
-        sfx(21);
-        return;
-      }
+      if (menu.checkButton()) return;
 
       Bob startBob = null;
 
@@ -1625,7 +1620,7 @@ public class OneCircleDemake implements Game {
     void next() {
       bg.changeDir();
 
-      current++;
+      if (current < list.length - 1) current++;
       restart();
     }
 
@@ -1641,10 +1636,55 @@ public class OneCircleDemake implements Game {
   class GameMenu {
     static final int lineLength = 7;
 
-    void update() {
-      if (Inputs.keyOnce(KeyCode.C)) {
+    Sprite reloadSpr = sheet.slice(Vec.of(81, 25), 5, 6);
+    Sprite menuSpr = sheet.slice(Vec.of(89, 25), 5, 6);
+
+    void open() {
+      scene = GameScene.MENU;
+      sfx(21);
+    }
+
+    void drawReloadSpr() {
+      Graphics.sprite(
+        reloadSpr,
+        Vec.of(115, 1).add(bg.shake.pos)
+      );
+    }
+
+    void drawMenuSpr() {
+      Graphics.sprite(
+        menuSpr,
+        Vec.of(122, 1).add(bg.shake.pos)
+      );
+    }
+
+    boolean checkButton() {
+      if (cursorStartAndEndIn(Vec.of(120, 0), Vec.of(8, 8))) {
+        if (scene == GameScene.MENU) {
+          goBack();
+        }
+        else {
+          open();
+        }
+        return true;
+      }
+
+      return false;
+    }
+
+    void goBack() {
+      if (levels.current == levels.list.length - 1) {
+        scene = GameScene.CREDITS;
+      }
+      else {
         scene = GameScene.GAME;
         sfx(22);
+      }
+    }
+
+    void update() {
+      if (Inputs.keyOnce(KeyCode.C)) {
+        goBack();
         return;
       }
     }
@@ -1659,7 +1699,7 @@ public class OneCircleDemake implements Game {
         }
       }
 
-      for (int i = 0; i < levels.list.length; ++i) {
+      for (int i = 0; i < levels.list.length - 1; ++i) {
         int x = i % lineLength, y = i / lineLength;
 
         if (inRect(cursor.pos, Vec.of(9 + x * 16, 24 + y * 10), Vec.of(12, 9))) {
@@ -1695,15 +1735,11 @@ public class OneCircleDemake implements Game {
         );
       }
 
-      Graphics.sprite(menuSpr, Vec.of(122, 1));
+      drawMenuSpr();
     }
 
     void onMouseUp() {
-      if (cursorStartAndEndIn(Vec.of(120, 0), Vec.of(8, 8))) {
-        scene = GameScene.GAME;
-        sfx(22);
-        return;
-      }
+      if (checkButton()) return;
 
       for (int i = 0; i < levels.list.length; ++i) {
         int x = i % lineLength, y = i / lineLength;
@@ -1739,12 +1775,17 @@ public class OneCircleDemake implements Game {
     static class FakeBob {
       double y = 0;
       double yv = 0;
-      boolean stopped = false;
+      int respawning = 0;
     }
 
     List<FakeBob> bobPhysics = new ArrayList<>();
 
     void update() {
+      if (Inputs.keyOnce(KeyCode.C)) {
+        menu.open();
+        return;
+      }
+
       if (size < 2) {
         size = Math.min(Math.max(0.6, size * 1.06), 2);
       }
@@ -1753,7 +1794,7 @@ public class OneCircleDemake implements Game {
           bg.shakeScreen();
         }
 
-        if (bobsCount < 4) {
+        if (bobsCount < 3) {
           bobsCount += 0.1;
         }
       }
@@ -1763,20 +1804,18 @@ public class OneCircleDemake implements Game {
       }
 
       for (FakeBob fakBob : bobPhysics) {
-        if (!fakBob.stopped) {
+        if (fakBob.respawning > 0) {
+          fakBob.respawning--;
+        }
+        else {
           fakBob.y += fakBob.yv;
+          fakBob.yv += 0.2;
 
           if (fakBob.y > 0) {
             fakBob.y = 0;
-            fakBob.stopped = true;
-
-            schedule.add(() -> {
-              fakBob.yv = -3;
-              fakBob.stopped = false;
-            }, 24);
+            fakBob.yv = -3;
+            fakBob.respawning = 24;
           }
-
-          fakBob.yv += 0.2;
         }
       }
     }
@@ -1804,6 +1843,12 @@ public class OneCircleDemake implements Game {
       for (int i = 0; i < bobsCount; ++i) {
         drawBob(Vec.of(34 + 20 * i, 102 + bobPhysics.get(i).y), bobsIndexes[i]);
       }
+
+      menu.drawMenuSpr();
+    }
+
+    void onMouseUp() {
+      if (menu.checkButton()) return;
     }
   }
 

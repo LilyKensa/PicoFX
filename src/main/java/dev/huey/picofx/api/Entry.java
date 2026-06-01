@@ -171,6 +171,11 @@ public class Entry {
       delta = now - last;
       last = now;
 
+      // double fps = 1000000000d / delta;
+      // if (fps < 50 || fps > 700) {
+      //   System.out.printf("Weird Frame Rate: %.2f\n", fps);
+      // }
+
       if (paused) {
         skipped += delta;
       }
