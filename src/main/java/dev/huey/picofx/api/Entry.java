@@ -119,11 +119,13 @@ public class Entry {
       switch (ev.getCode()) {
         case R -> {
           killClock();
+          Audios.stopAll();
           initClock();
           startClock();
         }
         case C -> {
           killClock();
+          Audios.stopAll();
           ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         }
       }
@@ -135,6 +137,7 @@ public class Entry {
         int index = ev.getCode().getCode() - KeyCode.DIGIT0.getCode();
 
         killClock();
+        Audios.stopAll();
         ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         slot = index;
 

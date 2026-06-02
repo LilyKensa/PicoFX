@@ -1,21 +1,29 @@
 package dev.huey.picofx.api.modules;
 
 import dev.huey.picofx.api.items.Sound;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Audios {
-  
-  static public void emit(Sound sound) {
-    sound.getClip().play();
-  }
 
+  // 記錄曾經用 emit() 播過的音效
+  static Set<AudioClip> activeClips = new HashSet<>();
   static final List<MediaPlayer> activePlayers = new ArrayList<>();
 
   static MediaPlayer player = null;
   static boolean isPausedByGame = false;
+
+
+  static public void emit(Sound sound) {
+    AudioClip clip = sound.getClip();
+    activeClips.add(clip);
+    clip.play();
+  }
 
   static public void onPauseStateChange(boolean paused) {
     if (paused) {
@@ -59,5 +67,26 @@ public class Audios {
   static public void stop() {
     if (player == null) return;
     player.stop();
+    activePlayers.remove(player);
+    player.dispose();
+    player = null;
+  }
+
+  // 停止背景音樂與音效
+  static public void stopAll() {
+    stop();
+
+    for (MediaPlayer activePlayer : new ArrayList<>(activePlayers)) {
+      activePlayer.stop();
+      activePlayer.dispose();
+    }
+    activePlayers.clear();
+
+    for (AudioClip clip : new ArrayList<>(activeClips)) {
+      clip.stop();
+    }
+    activeClips.clear();
+
+    isPausedByGame = false;
   }
 }
