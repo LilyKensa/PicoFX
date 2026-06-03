@@ -1292,7 +1292,7 @@ public class SuperDiscBox implements Game {
         message = "ONLY " + (lastHighScore - score + 1) + " TO NEW HIGHSCORE!";
       }
       shadowPrintCentered(message, Vec.of(64, 32 + 12 + 20 + 12), palette[7]);
-      shadowPrintCentered("PRESS 🅾️  OR ❎  TO RESTART", Vec.of(64 + 4, 32 + 12 + 20 + 12 + 8), palette[7]);
+      shadowPrintCentered("PRESS C OR X TO RESTART", Vec.of(64 + 4, 32 + 12 + 20 + 12 + 8), palette[7]);
     }
   }
 
@@ -2472,9 +2472,10 @@ public class SuperDiscBox implements Game {
     drawLogo(scale);
 
     // prompt to start
+    // "PRESS 🅾️  OR ❎  TO START"
     if (frame > 120 && (frame % 30 < 15)) {
       prettyPrint(
-        "PRESS 🅾️  OR ❎  TO START",
+        "PRESS C OR X TO START",
         Vec.of(64 - 2 * 22, 80),
         palette[7]
       );

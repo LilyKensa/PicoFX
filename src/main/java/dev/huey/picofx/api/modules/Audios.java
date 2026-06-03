@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class Audios {
 
-  // 記錄曾經用 emit() 播過的音效
+  // Track sound effects played by emit()
   static Set<AudioClip> activeClips = new HashSet<>();
   static final List<MediaPlayer> activePlayers = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class Audios {
     player = null;
   }
 
-  // 停止背景音樂與音效
+  // Stop background music and active sound effects
   static public void stopAll() {
     stop();
 

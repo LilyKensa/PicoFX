@@ -7,7 +7,6 @@ import dev.huey.picofx.api.modules.Config;
 import dev.huey.picofx.api.modules.Inputs;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -21,6 +20,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import dev.huey.picofx.api.items.Font;
+import dev.huey.picofx.api.modules.Graphics;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -30,6 +32,11 @@ import java.nio.IntBuffer;
 
 public class Entry {
   static public Entry instance;
+
+  static final Color LAUNCHER_BG = Color.BLACK;
+  static final Color LAUNCHER_TITLE = Color.web("#fff1e8");
+  static final Color LAUNCHER_TEXT = Color.web("#c2c3c7");
+  static final Color LAUNCHER_HINT = Color.web("#29adff");
 
   static public String fetchGameId() {
     GameSlot slot = instance.slots[instance.slot];
@@ -69,6 +76,14 @@ public class Entry {
 
   Canvas canvas;
   GraphicsContext ctx;
+
+  boolean launcherMode = true;
+  Font launcherFont;
+
+  // Separate timer for launcher blinking before any game is loaded
+  AnimationTimer launcherTimer;
+  int launcherFrame = 0;
+  boolean launcherHintVisible = true;
 
   public Vec getPanePos() {
     return Vec.of(
@@ -118,15 +133,23 @@ public class Entry {
     if (ev.isControlDown()) {
       switch (ev.getCode()) {
         case R -> {
+          if (launcherMode) return;
+
           killClock();
           Audios.stopAll();
           initClock();
           startClock();
         }
         case C -> {
+          if (launcherMode) return;
+
           killClock();
           Audios.stopAll();
           ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+          game = null;
+          tickTimer = null;
+          startLauncher();
         }
       }
 
@@ -136,13 +159,7 @@ public class Entry {
       ) {
         int index = ev.getCode().getCode() - KeyCode.DIGIT0.getCode();
 
-        killClock();
-        Audios.stopAll();
-        ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        slot = index;
-
-        initClock();
-        startClock();
+        loadGame(index);
       }
     }
   }
@@ -213,6 +230,8 @@ public class Entry {
   void startClock() {
     if (game == null || tickTimer == null) return;
 
+    stage.setTitle(game.getName() + " - PicoFX");
+
     game.start();
     tickTimer.start();
   }
@@ -223,14 +242,101 @@ public class Entry {
     tickTimer.stop();
     origin = -1;
   }
-  
+
+  void loadGame(int index) {
+    if (index < 0 || index >= slots.length || slots[index] == null) return;
+
+    stopLauncher();
+    killClock();
+    Audios.stopAll();
+    ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+    slot = index;
+    launcherMode = false;
+    paused = false;
+
+    initClock();
+    startClock();
+  }
+
+  int launcherTextWidth(String text) {
+    return text.length() * launcherFont.getSpaceWidth();
+  }
+
+  void launcherPrintCentered(String text, int y, Color color) {
+    int x = (Config.size.width() - launcherTextWidth(text)) / 2;
+    Graphics.print(text, Vec.of(x, y), color, launcherFont);
+  }
+
+  void launcherPrint(String text, int x, int y, Color color) {
+    Graphics.print(text, Vec.of(x, y), color, launcherFont);
+  }
+
+  void startLauncher() {
+    launcherMode = true;
+    stage.setTitle("PicoFX");
+
+    launcherFrame = 0;
+    launcherHintVisible = true;
+    renderLauncher();
+
+    if (launcherTimer == null) {
+      launcherTimer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+          launcherFrame++;
+
+          if (launcherFrame >= 30) {
+            launcherFrame = 0;
+            launcherHintVisible = !launcherHintVisible;
+            renderLauncher();
+          }
+        }
+      };
+    }
+
+    launcherTimer.start();
+  }
+
+  void stopLauncher() {
+    if (launcherTimer != null) {
+      launcherTimer.stop();
+    }
+  }
+
+  void renderLauncher() {
+    // Draw launcher through the same 128x128 pixel buffer as games
+    useScreenB = false;
+
+    Graphics.camera();
+    Graphics.clear(LAUNCHER_BG);
+
+    launcherPrintCentered("PICOFX", 4, LAUNCHER_TITLE);
+    launcherPrintCentered("GAME LAUNCHER", 16, LAUNCHER_TEXT);
+
+    launcherPrint("AVAILABLE GAMES", 16, 32, LAUNCHER_TITLE);
+    launcherPrint("CTRL+1  SUPER DISC BOX", 16, 42, LAUNCHER_TEXT);
+    launcherPrint("CTRL+2  ONE CIRCLE DEMAKE", 16, 50, LAUNCHER_TEXT);
+
+    launcherPrint("CONTROLS", 16, 66, LAUNCHER_TITLE);
+    launcherPrint("ESC      PAUSE", 16, 76, LAUNCHER_TEXT);
+    launcherPrint("F11      FULLSCREEN", 16, 84, LAUNCHER_TEXT);
+    launcherPrint("CTRL+R   RELOAD", 16, 92, LAUNCHER_TEXT);
+    launcherPrint("CTRL+C   STOP", 16, 100, LAUNCHER_TEXT);
+
+    if (launcherHintVisible) {
+      launcherPrintCentered("PRESS CTRL+NUMBER", 116, LAUNCHER_HINT);
+    }
+
+    currentScreenBuffer().updateBuffer(_ -> null);
+    ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+  }
+
   public void start(Stage stage) {
     this.stage = stage;
 
-    initClock();
-
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
-    stage.setTitle(game.getName() + " - PicoFX");
+    stage.setTitle("PicoFX");
 
     Screen screen = Screen.getPrimary();
     stage.setWidth(screen.getBounds().getWidth() * 0.5);
@@ -252,8 +358,10 @@ public class Entry {
       IntBuffer.allocate(Config.size.width() * Config.size.height()),
       PixelFormat.getIntArgbPreInstance()
     );
-    screenImageB = new WritableImage(screenBufferA);
-    
+    screenImageB = new WritableImage(screenBufferB);
+
+    launcherFont = Font.pico8();
+
     canvas = new Canvas();
     ctx = canvas.getGraphicsContext2D();
     ctx.setImageSmoothing(false);
@@ -276,12 +384,18 @@ public class Entry {
       _,
       _,
       val
-    ) -> onResize(val.doubleValue(), scene.getHeight()));
+    ) -> {
+      onResize(val.doubleValue(), scene.getHeight());
+      if (launcherMode) renderLauncher();
+    });
     scene.heightProperty().addListener((
       _,
       _,
       val
-    ) -> onResize(scene.getWidth(), val.doubleValue()));
+    ) -> {
+      onResize(scene.getWidth(), val.doubleValue());
+      if (launcherMode) renderLauncher();
+    });
     
     scene.setOnKeyPressed(this::onKeyDown);
     scene.setOnKeyReleased(this::onKeyUp);
@@ -294,11 +408,11 @@ public class Entry {
     stage.setScene(scene);
     stage.show();
 
-    startClock();
+    startLauncher();
   }
   
   void update() {
-    if (!paused) {
+    if (!launcherMode && !paused && game != null) {
       game.update();
     }
     
@@ -306,9 +420,13 @@ public class Entry {
   }
   
   void render() {
+    if (launcherMode) {
+      renderLauncher();
+      return;
+    }
     useScreenB = !useScreenB;
 
-    if (!paused) {
+    if (!paused && game != null) {
       game.render();
     }
     
