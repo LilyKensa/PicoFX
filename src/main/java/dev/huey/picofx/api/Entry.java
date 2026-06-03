@@ -101,10 +101,10 @@ public class Entry {
   }
   
   void onResize(double windowWidth, double windowHeight) {
-    upscaleRatio = (int) Math.min(
+    upscaleRatio =  Math.max(1, (int) Math.min(
       windowWidth / Config.size.width(),
       windowHeight / Config.size.height()
-    );
+    ));
     
     pane.resize(
       Config.size.width() * upscaleRatio,
@@ -113,6 +113,7 @@ public class Entry {
   }
   
   void onKeyDown(KeyEvent ev) {
+    if (ev.isControlDown()) return;
     Inputs.onKeyDown(ev);
 
     switch (ev.getCode()) {
@@ -137,6 +138,7 @@ public class Entry {
 
           killClock();
           Audios.stopAll();
+          paused = false;
           initClock();
           startClock();
         }
@@ -147,6 +149,7 @@ public class Entry {
           Audios.stopAll();
           ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+          paused = false;
           game = null;
           tickTimer = null;
           startLauncher();
@@ -424,9 +427,15 @@ public class Entry {
       renderLauncher();
       return;
     }
+
+    if (paused) {
+      ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+      return;
+    }
+
     useScreenB = !useScreenB;
 
-    if (!paused && game != null) {
+    if (game != null) {
       game.render();
     }
     
