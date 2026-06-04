@@ -9,7 +9,6 @@ import javafx.scene.input.MouseEvent;
 import lombok.Setter;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 
 public class Inputs {
   static public EnumMap<KeyCode, Integer> keyTimers = new EnumMap<>(KeyCode.class);
