@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class Graphics {
 
-  static final Color[] pico8Palette = {
+  static public final Color[] pico8Palette = {
     Color.web("#000000"),
     Color.web("#1D2B53"),
     Color.web("#7E2553"),

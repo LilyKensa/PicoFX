@@ -6,18 +6,14 @@ import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Audios {
 
-  // Track sound effects played by emit()
   static Set<AudioClip> activeClips = new HashSet<>();
-  static final List<MediaPlayer> activePlayers = new ArrayList<>();
 
   static MediaPlayer player = null;
-  static boolean isPausedByGame = false;
-
+  static boolean shouldResume = false;
 
   static public void emit(Sound sound) {
     AudioClip clip = sound.getClip();
@@ -28,11 +24,11 @@ public class Audios {
   static public void onPauseStateChange(boolean paused) {
     if (paused) {
       pause();
-      isPausedByGame = true;
+      shouldResume = true;
     }
-    else if (isPausedByGame) {
+    else if (shouldResume) {
       resume();
-      isPausedByGame = false;
+      shouldResume = false;
     }
   }
   
@@ -41,11 +37,6 @@ public class Audios {
     player = new MediaPlayer(sound.getMedia());
     player.setCycleCount(times);
     player.play();
-
-    activePlayers.add(player);
-    player.setOnEndOfMedia(() -> {
-      activePlayers.remove(player);
-    });
   }
 
   static public void music(Sound sound) {
@@ -55,38 +46,28 @@ public class Audios {
   static public void pause() {
     if (player == null) return;
     player.pause();
-    activePlayers.remove(player);
   }
 
   static public void resume() {
     if (player == null) return;
     player.play();
-    activePlayers.add(player);
   }
 
   static public void stop() {
     if (player == null) return;
     player.stop();
-    activePlayers.remove(player);
     player.dispose();
     player = null;
   }
 
-  // Stop background music and active sound effects
   static public void stopAll() {
     stop();
-
-    for (MediaPlayer activePlayer : new ArrayList<>(activePlayers)) {
-      activePlayer.stop();
-      activePlayer.dispose();
-    }
-    activePlayers.clear();
 
     for (AudioClip clip : new ArrayList<>(activeClips)) {
       clip.stop();
     }
     activeClips.clear();
 
-    isPausedByGame = false;
+    shouldResume = false;
   }
 }
