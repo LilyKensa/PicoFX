@@ -90,12 +90,12 @@ public class OneCircleDemake implements Game {
   // Utils
 
   void shadowCircle(Vec pos, double size, Color col) {
-    Graphics.circle(pos.add(Vec.of(1.5, 1.5)), size, palette[0]);
+    Graphics.circle(pos.add(Vec.of(1, 1)), size, palette[0]);
     Graphics.circle(pos, size, col);
   }
 
   void shadowFillCircle(Vec pos, double size, Color col) {
-    Graphics.fillCircle(pos.add(Vec.of(1.5, 1.5)), size, palette[0]);
+    Graphics.fillCircle(pos.add(Vec.of(1, 1)), size, palette[0]);
     Graphics.fillCircle(pos, size, col);
   }
 
@@ -963,6 +963,9 @@ public class OneCircleDemake implements Game {
         for (BaseObject obj : list) {
           if (obj.pos.equals(pos)) {
             if (obj instanceof Bob bob && bob.index != startBob.index) {
+              blocked = true;
+            }
+            if (obj instanceof Brick bri && bri.index != startBob.index) {
               blocked = true;
             }
 

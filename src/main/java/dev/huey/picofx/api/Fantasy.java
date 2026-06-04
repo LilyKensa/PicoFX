@@ -39,6 +39,8 @@ public class Fantasy {
 
   final Sound startupSound = Sound.load("_builtin", "pico-8-startup");
 
+  boolean firstSetup = true;
+
   int frame = 0;
 
   int[] darkMixCounts = {8, 16, 32, 32, 16, 16, 8};
@@ -51,10 +53,15 @@ public class Fantasy {
     font = Font.pico8();
   }
 
+  public void restart() {
+    firstSetup = true;
+  }
+
   void start() {
     Graphics.font(font);
 
-    frame = 0;
+    frame = firstSetup ? 0 : 200;
+    firstSetup = false;
 
     darkMixes = new int[16][128];
 
@@ -138,16 +145,44 @@ public class Fantasy {
       Graphics.sprite(logoSpr, Vec.of(0, 0));
     }
 
-    if (frame > 88) {
+    if (frame >= 88) {
       Graphics.print("PICO-FX 0.2.9B", Vec.of(0, 18), palette[6]);
     }
 
-    if (frame > 90) {
+    if (frame >= 90) {
       Graphics.print("(C) 2025-26 HUEY", Vec.of(0, 24), palette[6]);
     }
 
-    if (frame > 98) {
-      Graphics.print("PRESS CTRL + (NUMBER)", Vec.of(0, 36), palette[6]);
+    if (frame >= 98) {
+      Graphics.print("KEYBINDINGS", Vec.of(0, 36), palette[12]);
+    }
+
+    if (frame >= 100) {
+      int y = 42;
+      Graphics.print("F: TOGGLE FULLSCREEN", Vec.of(0, y), palette[6]);
+      if (frame >= 102) {
+        Graphics.print("P: PAUSE GAME", Vec.of(0, y += 6), palette[6]);
+      }
+      if (frame >= 104) {
+        Graphics.print("CTRL + Q: QUIT GAME", Vec.of(0, y += 6), palette[6]);
+      }
+      if (frame >= 106) {
+        Graphics.print("CTRL + R: RESTART", Vec.of(0, y += 6), palette[6]);
+      }
+      if (frame >= 108) {
+        Graphics.print("CTRL + (DIGIT): LOAD GAME", Vec.of(0, y += 6), palette[6]);
+      }
+    }
+
+    if (frame >= 118) {
+      int y = 78;
+      Graphics.print("CURRENT GAMES", Vec.of(0, y), palette[12]);
+      if (frame >= 120) {
+        Graphics.print("[1]: SUPER DISC BOX", Vec.of(0, y += 6), palette[6]);
+      }
+      if (frame >= 122) {
+        Graphics.print("[2]: ONE CIRCLE DEMAKE", Vec.of(0, y += 6), palette[6]);
+      }
     }
   }
 }

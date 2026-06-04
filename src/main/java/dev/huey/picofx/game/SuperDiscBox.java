@@ -156,6 +156,7 @@ public class SuperDiscBox implements Game {
     WEAPON_FIRE_GRENADE,
     WEAPON_FIRE_MINES,
     WEAPON_FIRE_LASER,
+    WEAPON_FIRE_FLAMETHROWER,
     DISC_DAMAGE,
     DISC_DEATH,
     DISC_DEATH_SEEKER,
@@ -1292,7 +1293,7 @@ public class SuperDiscBox implements Game {
         message = "ONLY " + (lastHighScore - score + 1) + " TO NEW HIGHSCORE!";
       }
       shadowPrintCentered(message, Vec.of(64, 32 + 12 + 20 + 12), palette[7]);
-      shadowPrintCentered("PRESS C OR X TO RESTART", Vec.of(64 + 4, 32 + 12 + 20 + 12 + 8), palette[7]);
+      shadowPrintCentered("PRESS C OR X TO RESTART", Vec.of(64, 32 + 12 + 20 + 12 + 8), palette[7]);
     }
   }
 
@@ -1770,6 +1771,9 @@ public class SuperDiscBox implements Game {
           v.x *= -1;
         }
         bullets.add(makeFlame(pl.pos.add(b), v, plus));
+        if (frame % 2 == 0) {
+          Audios.emit(sounds.get(SoundID.WEAPON_FIRE_FLAMETHROWER));
+        }
       })
       .build();
   }
@@ -2421,6 +2425,7 @@ public class SuperDiscBox implements Game {
 
   void initTitleScreen() {
     Graphics.clear(palette[0]);
+    Audios.stopAll();
     Audios.music(sounds.get(SoundID.MUSIC_TITLE));
   }
 
@@ -2476,7 +2481,7 @@ public class SuperDiscBox implements Game {
     if (frame > 120 && (frame % 30 < 15)) {
       prettyPrint(
         "PRESS C OR X TO START",
-        Vec.of(64 - 2 * 22, 80),
+        Vec.of(64 - 2 * 20, 80),
         palette[7]
       );
     }

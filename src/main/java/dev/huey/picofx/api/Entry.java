@@ -109,7 +109,7 @@ public class Entry {
 
         Audios.onPauseStateChange(paused);
       }
-      case F11 -> {
+      case F -> {
         stage.setFullScreen(!stage.isFullScreen());
       }
     }
@@ -121,9 +121,15 @@ public class Entry {
     if (ev.isControlDown()) {
       switch (ev.getCode()) {
         case R -> {
-          if (inFantasy) return;
+          paused = false;
 
-          loadGame(slot);
+          if (inFantasy) {
+            fantasy.restart();
+            loadFantasy();
+          }
+          else {
+            loadGame(slot);
+          }
         }
         case Q -> {
           if (inFantasy) return;
