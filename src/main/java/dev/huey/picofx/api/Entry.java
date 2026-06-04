@@ -347,7 +347,9 @@ public class Entry {
   }
   
   void render() {
-    useScreenB = !useScreenB;
+    if (inFantasy || !paused) {
+      useScreenB = !useScreenB;
+    }
 
     if (inFantasy) {
       fantasy.render();

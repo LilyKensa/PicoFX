@@ -8,13 +8,13 @@ Well, actually it's just the runner, no console, no editor :)
 
 ## Origin
 
-One of my stupid courses in college requires us to make a game on JavaFX as the project of the semester
+One of my courses in college requires us to make a game on JavaFX as the project of the semester
 
-Not gonna lie, it's just ridiculous. I mean, this shit is released at May 2007, it's freaking older than me! 
+Not gonna lie, it's just ridiculous. I mean, it is released at May 2007, it's even older than me! 
 
-I couldn't help but think that the teachers are too lazy to learn anything so they just keep on teaching the same thing every year...
+I couldn't help but think that the teachers are too lazy to learn new things so they just keep on teaching the same thing every year...
 
-So if you're checking this out because you wanna make something yourself, don't choose JavaFX, I 100% do not recommend. Use `SvelteKit` + `Tauri` if you wanna make a frontend app, `Unity` or `Unreal Engine` if you wanna make a game
+So if you're checking this out because you wanna make something yourself, don't choose JavaFX, 0% recommended. Use `SvelteKit` + `Tauri` if you wanna make a frontend app, `Unity` or `Unreal Engine` if you wanna make a game
 
 Alright, that's enough yapping
 

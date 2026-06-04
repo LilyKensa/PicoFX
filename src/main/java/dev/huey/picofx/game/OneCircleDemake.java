@@ -771,28 +771,20 @@ public class OneCircleDemake implements Game {
         if (obj instanceof Bob bob) {
           drawBob(bob.drawPos.add(bob.wiggle), bob.index, bob.size, bob.flashRed);
         }
-        else if (obj instanceof MovingBob movBob) {
+      }
+
+      for (BaseObject obj : list) {
+        if (!obj.active) continue;
+
+        if (obj instanceof MovingBob movBob) {
           drawBob(movBob.pos, movBob.index, 8);
         }
-        else if (obj instanceof Brick bri) {
-          Graphics.map(palette[8], colors.get(bri.index).primary);
-          Graphics.map(palette[14], colors.get(bri.index).secondary);
-          Graphics.easeSprite(
-            brickSpr,
-            obj.drawPos.minus(bri.size, bri.size),
-            bri.size * 2 + 2, bri.size * 2 + 2
-          );
-          Graphics.map(palette[8], palette[8]);
-          Graphics.map(palette[14], palette[14]);
-        }
-        else if (obj instanceof Splitter spl) {
-          Graphics.easeSprite(
-            splitterSpr,
-            obj.drawPos.minus(spl.size, spl.size),
-            spl.size * 2 + 2, spl.size * 2 + 2
-          );
-        }
-        else if (obj instanceof Spacer spa) {
+      }
+
+      for (BaseObject obj : list) {
+        if (!obj.active) continue;
+
+        if (obj instanceof Spacer spa) {
           for (int dx = 0; dx <= 1; ++dx) {
             for (int dy = 0; dy <= 1; ++dy) {
               Graphics.circle(
@@ -812,6 +804,34 @@ public class OneCircleDemake implements Game {
               );
             }
           }
+        }
+      }
+
+      for (BaseObject obj : list) {
+        if (!obj.active) continue;
+
+        if (obj instanceof Splitter spl) {
+          Graphics.easeSprite(
+            splitterSpr,
+            obj.drawPos.minus(spl.size, spl.size),
+            spl.size * 2 + 2, spl.size * 2 + 2
+          );
+        }
+      }
+
+      for (BaseObject obj : list) {
+        if (!obj.active) continue;
+
+        if (obj instanceof Brick bri) {
+          Graphics.map(palette[8], colors.get(bri.index).primary);
+          Graphics.map(palette[14], colors.get(bri.index).secondary);
+          Graphics.easeSprite(
+            brickSpr,
+            obj.drawPos.minus(bri.size, bri.size),
+            bri.size * 2 + 2, bri.size * 2 + 2
+          );
+          Graphics.map(palette[8], palette[8]);
+          Graphics.map(palette[14], palette[14]);
         }
       }
 
