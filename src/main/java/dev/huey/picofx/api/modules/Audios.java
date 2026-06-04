@@ -1,30 +1,34 @@
 package dev.huey.picofx.api.modules;
 
 import dev.huey.picofx.api.items.Sound;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Audios {
-  
-  static public void emit(Sound sound) {
-    sound.getClip().play();
-  }
 
-  static final List<MediaPlayer> activePlayers = new ArrayList<>();
+  static Set<AudioClip> activeClips = new HashSet<>();
 
   static MediaPlayer player = null;
-  static boolean isPausedByGame = false;
+  static boolean shouldResume = false;
+
+  static public void emit(Sound sound) {
+    AudioClip clip = sound.getClip();
+    activeClips.add(clip);
+    clip.play();
+  }
 
   static public void onPauseStateChange(boolean paused) {
     if (paused) {
       pause();
-      isPausedByGame = true;
+      shouldResume = true;
     }
-    else if (isPausedByGame) {
+    else if (shouldResume) {
       resume();
-      isPausedByGame = false;
+      shouldResume = false;
     }
   }
   
@@ -33,11 +37,6 @@ public class Audios {
     player = new MediaPlayer(sound.getMedia());
     player.setCycleCount(times);
     player.play();
-
-    activePlayers.add(player);
-    player.setOnEndOfMedia(() -> {
-      activePlayers.remove(player);
-    });
   }
 
   static public void music(Sound sound) {
@@ -47,17 +46,28 @@ public class Audios {
   static public void pause() {
     if (player == null) return;
     player.pause();
-    activePlayers.remove(player);
   }
 
   static public void resume() {
     if (player == null) return;
     player.play();
-    activePlayers.add(player);
   }
 
   static public void stop() {
     if (player == null) return;
     player.stop();
+    player.dispose();
+    player = null;
+  }
+
+  static public void stopAll() {
+    stop();
+
+    for (AudioClip clip : new ArrayList<>(activeClips)) {
+      clip.stop();
+    }
+    activeClips.clear();
+
+    shouldResume = false;
   }
 }

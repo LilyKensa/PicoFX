@@ -7,7 +7,6 @@ import dev.huey.picofx.api.modules.Config;
 import dev.huey.picofx.api.modules.Inputs;
 import dev.huey.picofx.api.modules.Utils;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -37,17 +36,19 @@ public class Entry {
   }
 
   @Getter
+  Fantasy fantasy;
+
+  @Getter
   Game game;
 
-  record GameSlot(String id, Class<? extends Game> game) {
-
-  }
+  record GameSlot(String id, Class<? extends Game> game) { }
 
   GameSlot[] slots = new GameSlot[10];
   int slot = 1;
 
   public Entry() {
     instance = this;
+    fantasy = new Fantasy();
   }
 
   public Entry addGame(int slot, String id, Class<? extends Game> gameClass) {
@@ -69,6 +70,8 @@ public class Entry {
 
   Canvas canvas;
   GraphicsContext ctx;
+
+  boolean inFantasy = true;
 
   public Vec getPanePos() {
     return Vec.of(
@@ -101,12 +104,12 @@ public class Entry {
     Inputs.onKeyDown(ev);
 
     switch (ev.getCode()) {
-      case ESCAPE -> {
+      case P -> {
         paused = !paused;
 
         Audios.onPauseStateChange(paused);
       }
-      case F11 -> {
+      case F -> {
         stage.setFullScreen(!stage.isFullScreen());
       }
     }
@@ -118,13 +121,20 @@ public class Entry {
     if (ev.isControlDown()) {
       switch (ev.getCode()) {
         case R -> {
-          killClock();
-          initClock();
-          startClock();
+          paused = false;
+
+          if (inFantasy) {
+            fantasy.restart();
+            loadFantasy();
+          }
+          else {
+            loadGame(slot);
+          }
         }
-        case C -> {
-          killClock();
-          ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        case Q -> {
+          if (inFantasy) return;
+
+          loadFantasy();
         }
       }
 
@@ -134,12 +144,7 @@ public class Entry {
       ) {
         int index = ev.getCode().getCode() - KeyCode.DIGIT0.getCode();
 
-        killClock();
-        ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        slot = index;
-
-        initClock();
-        startClock();
+        loadGame(index);
       }
     }
   }
@@ -196,21 +201,30 @@ public class Entry {
   TickAnimationTimer tickTimer;
 
   void initClock() {
-    if (slots[slot] == null) return;
+    if (!inFantasy) {
+      if (slots[slot] == null) return;
 
-    try {
-      game = slots[slot].game.getDeclaredConstructor().newInstance();
+      try {
+        game = slots[slot].game.getDeclaredConstructor().newInstance();
+      }
+      catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
+        throw new RuntimeException(ex);
+      }
     }
-    catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
-      throw new RuntimeException(ex);
-    }
+
     tickTimer = new TickAnimationTimer();
   }
 
   void startClock() {
-    if (game == null || tickTimer == null) return;
+    if (tickTimer == null) return;
 
-    game.start();
+    if (inFantasy) {
+      fantasy.start();
+    }
+    else {
+      game.start();
+    }
+
     tickTimer.start();
   }
 
@@ -220,14 +234,41 @@ public class Entry {
     tickTimer.stop();
     origin = -1;
   }
-  
+
+  void loadFantasy() {
+    killClock();
+    Audios.stopAll();
+
+    inFantasy = true;
+    paused = false;
+
+    initClock();
+    startClock();
+
+    stage.setTitle("PicoFX");
+  }
+
+  void loadGame(int index) {
+    if (index < 0 || index >= slots.length || slots[index] == null) return;
+
+    killClock();
+    Audios.stopAll();
+
+    slot = index;
+    inFantasy = false;
+    paused = false;
+
+    initClock();
+    startClock();
+
+    stage.setTitle(game.getName() + " - PicoFX");
+  }
+
   public void start(Stage stage) {
     this.stage = stage;
 
-    initClock();
-
     stage.getIcons().add(Utils.loadImage("/assets/icon.png"));
-    stage.setTitle(game.getName() + " - PicoFX");
+    stage.setTitle("PicoFX");
 
     Screen screen = Screen.getPrimary();
     stage.setWidth(screen.getBounds().getWidth() * 0.5);
@@ -249,8 +290,8 @@ public class Entry {
       IntBuffer.allocate(Config.size.width() * Config.size.height()),
       PixelFormat.getIntArgbPreInstance()
     );
-    screenImageB = new WritableImage(screenBufferA);
-    
+    screenImageB = new WritableImage(screenBufferB);
+
     canvas = new Canvas();
     ctx = canvas.getGraphicsContext2D();
     ctx.setImageSmoothing(false);
@@ -291,11 +332,14 @@ public class Entry {
     stage.setScene(scene);
     stage.show();
 
-    startClock();
+    loadFantasy();
   }
   
   void update() {
-    if (!paused) {
+    if (inFantasy) {
+      fantasy.update();
+    }
+    else if (!paused && game != null) {
       game.update();
     }
     
@@ -303,14 +347,18 @@ public class Entry {
   }
   
   void render() {
-    useScreenB = !useScreenB;
-
-    if (!paused) {
-      game.render();
+    if (inFantasy) {
+      fantasy.render();
     }
-    
-    currentScreenBuffer().updateBuffer(_ -> null);
+    else if (!paused) {
+      useScreenB = !useScreenB;
 
+      if (game != null) {
+        game.render();
+      }
+    }
+
+    currentScreenBuffer().updateBuffer(_ -> null);
     ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
   }
 }
