@@ -20,9 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import dev.huey.picofx.api.items.Font;
-import dev.huey.picofx.api.modules.Graphics;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -33,28 +30,25 @@ import java.nio.IntBuffer;
 public class Entry {
   static public Entry instance;
 
-  static final Color LAUNCHER_BG = Color.BLACK;
-  static final Color LAUNCHER_TITLE = Color.web("#fff1e8");
-  static final Color LAUNCHER_TEXT = Color.web("#c2c3c7");
-  static final Color LAUNCHER_HINT = Color.web("#29adff");
-
   static public String fetchGameId() {
     GameSlot slot = instance.slots[instance.slot];
     return slot == null ? "_null" : slot.id;
   }
 
   @Getter
+  Fantasy fantasy;
+
+  @Getter
   Game game;
 
-  record GameSlot(String id, Class<? extends Game> game) {
-
-  }
+  record GameSlot(String id, Class<? extends Game> game) { }
 
   GameSlot[] slots = new GameSlot[10];
   int slot = 1;
 
   public Entry() {
     instance = this;
+    fantasy = new Fantasy();
   }
 
   public Entry addGame(int slot, String id, Class<? extends Game> gameClass) {
@@ -77,13 +71,7 @@ public class Entry {
   Canvas canvas;
   GraphicsContext ctx;
 
-  boolean launcherMode = true;
-  Font launcherFont;
-
-  // Separate timer for launcher blinking before any game is loaded
-  AnimationTimer launcherTimer;
-  int launcherFrame = 0;
-  boolean launcherHintVisible = true;
+  boolean inFantasy = true;
 
   public Vec getPanePos() {
     return Vec.of(
@@ -101,10 +89,10 @@ public class Entry {
   }
   
   void onResize(double windowWidth, double windowHeight) {
-    upscaleRatio =  Math.max(1, (int) Math.min(
+    upscaleRatio = (int) Math.min(
       windowWidth / Config.size.width(),
       windowHeight / Config.size.height()
-    ));
+    );
     
     pane.resize(
       Config.size.width() * upscaleRatio,
@@ -113,11 +101,10 @@ public class Entry {
   }
   
   void onKeyDown(KeyEvent ev) {
-    if (ev.isControlDown()) return;
     Inputs.onKeyDown(ev);
 
     switch (ev.getCode()) {
-      case ESCAPE -> {
+      case P -> {
         paused = !paused;
 
         Audios.onPauseStateChange(paused);
@@ -134,25 +121,14 @@ public class Entry {
     if (ev.isControlDown()) {
       switch (ev.getCode()) {
         case R -> {
-          if (launcherMode) return;
+          if (inFantasy) return;
 
-          killClock();
-          Audios.stopAll();
-          paused = false;
-          initClock();
-          startClock();
+          loadGame(slot);
         }
-        case C -> {
-          if (launcherMode) return;
+        case Q -> {
+          if (inFantasy) return;
 
-          killClock();
-          Audios.stopAll();
-          ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-          paused = false;
-          game = null;
-          tickTimer = null;
-          startLauncher();
+          loadFantasy();
         }
       }
 
@@ -219,23 +195,30 @@ public class Entry {
   TickAnimationTimer tickTimer;
 
   void initClock() {
-    if (slots[slot] == null) return;
+    if (!inFantasy) {
+      if (slots[slot] == null) return;
 
-    try {
-      game = slots[slot].game.getDeclaredConstructor().newInstance();
+      try {
+        game = slots[slot].game.getDeclaredConstructor().newInstance();
+      }
+      catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
+        throw new RuntimeException(ex);
+      }
     }
-    catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
-      throw new RuntimeException(ex);
-    }
+
     tickTimer = new TickAnimationTimer();
   }
 
   void startClock() {
-    if (game == null || tickTimer == null) return;
+    if (tickTimer == null) return;
 
-    stage.setTitle(game.getName() + " - PicoFX");
+    if (inFantasy) {
+      fantasy.start();
+    }
+    else {
+      game.start();
+    }
 
-    game.start();
     tickTimer.start();
   }
 
@@ -246,93 +229,33 @@ public class Entry {
     origin = -1;
   }
 
-  void loadGame(int index) {
-    if (index < 0 || index >= slots.length || slots[index] == null) return;
-
-    stopLauncher();
+  void loadFantasy() {
     killClock();
     Audios.stopAll();
-    ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-    slot = index;
-    launcherMode = false;
+    inFantasy = true;
     paused = false;
 
     initClock();
     startClock();
-  }
 
-  int launcherTextWidth(String text) {
-    return text.length() * launcherFont.getSpaceWidth();
-  }
-
-  void launcherPrintCentered(String text, int y, Color color) {
-    int x = (Config.size.width() - launcherTextWidth(text)) / 2;
-    Graphics.print(text, Vec.of(x, y), color, launcherFont);
-  }
-
-  void launcherPrint(String text, int x, int y, Color color) {
-    Graphics.print(text, Vec.of(x, y), color, launcherFont);
-  }
-
-  void startLauncher() {
-    launcherMode = true;
     stage.setTitle("PicoFX");
-
-    launcherFrame = 0;
-    launcherHintVisible = true;
-    renderLauncher();
-
-    if (launcherTimer == null) {
-      launcherTimer = new AnimationTimer() {
-        @Override
-        public void handle(long now) {
-          launcherFrame++;
-
-          if (launcherFrame >= 30) {
-            launcherFrame = 0;
-            launcherHintVisible = !launcherHintVisible;
-            renderLauncher();
-          }
-        }
-      };
-    }
-
-    launcherTimer.start();
   }
 
-  void stopLauncher() {
-    if (launcherTimer != null) {
-      launcherTimer.stop();
-    }
-  }
+  void loadGame(int index) {
+    if (index < 0 || index >= slots.length || slots[index] == null) return;
 
-  void renderLauncher() {
-    // Draw launcher through the same 128x128 pixel buffer as games
-    useScreenB = false;
+    killClock();
+    Audios.stopAll();
 
-    Graphics.camera();
-    Graphics.clear(LAUNCHER_BG);
+    slot = index;
+    inFantasy = false;
+    paused = false;
 
-    launcherPrintCentered("PICOFX", 4, LAUNCHER_TITLE);
-    launcherPrintCentered("GAME LAUNCHER", 16, LAUNCHER_TEXT);
+    initClock();
+    startClock();
 
-    launcherPrint("AVAILABLE GAMES", 16, 32, LAUNCHER_TITLE);
-    launcherPrint("CTRL+1  SUPER DISC BOX", 16, 42, LAUNCHER_TEXT);
-    launcherPrint("CTRL+2  ONE CIRCLE DEMAKE", 16, 50, LAUNCHER_TEXT);
-
-    launcherPrint("CONTROLS", 16, 66, LAUNCHER_TITLE);
-    launcherPrint("ESC      PAUSE", 16, 76, LAUNCHER_TEXT);
-    launcherPrint("F11      FULLSCREEN", 16, 84, LAUNCHER_TEXT);
-    launcherPrint("CTRL+R   RELOAD", 16, 92, LAUNCHER_TEXT);
-    launcherPrint("CTRL+C   STOP", 16, 100, LAUNCHER_TEXT);
-
-    if (launcherHintVisible) {
-      launcherPrintCentered("PRESS CTRL+NUMBER", 116, LAUNCHER_HINT);
-    }
-
-    currentScreenBuffer().updateBuffer(_ -> null);
-    ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+    stage.setTitle(game.getName() + " - PicoFX");
   }
 
   public void start(Stage stage) {
@@ -363,8 +286,6 @@ public class Entry {
     );
     screenImageB = new WritableImage(screenBufferB);
 
-    launcherFont = Font.pico8();
-
     canvas = new Canvas();
     ctx = canvas.getGraphicsContext2D();
     ctx.setImageSmoothing(false);
@@ -387,18 +308,12 @@ public class Entry {
       _,
       _,
       val
-    ) -> {
-      onResize(val.doubleValue(), scene.getHeight());
-      if (launcherMode) renderLauncher();
-    });
+    ) -> onResize(val.doubleValue(), scene.getHeight()));
     scene.heightProperty().addListener((
       _,
       _,
       val
-    ) -> {
-      onResize(scene.getWidth(), val.doubleValue());
-      if (launcherMode) renderLauncher();
-    });
+    ) -> onResize(scene.getWidth(), val.doubleValue()));
     
     scene.setOnKeyPressed(this::onKeyDown);
     scene.setOnKeyReleased(this::onKeyUp);
@@ -411,11 +326,14 @@ public class Entry {
     stage.setScene(scene);
     stage.show();
 
-    startLauncher();
+    loadFantasy();
   }
   
   void update() {
-    if (!launcherMode && !paused && game != null) {
+    if (inFantasy) {
+      fantasy.update();
+    }
+    else if (!paused && game != null) {
       game.update();
     }
     
@@ -423,24 +341,18 @@ public class Entry {
   }
   
   void render() {
-    if (launcherMode) {
-      renderLauncher();
-      return;
+    if (inFantasy) {
+      fantasy.render();
+    }
+    else if (!paused) {
+      useScreenB = !useScreenB;
+
+      if (game != null) {
+        game.render();
+      }
     }
 
-    if (paused) {
-      ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
-      return;
-    }
-
-    useScreenB = !useScreenB;
-
-    if (game != null) {
-      game.render();
-    }
-    
     currentScreenBuffer().updateBuffer(_ -> null);
-
     ctx.drawImage(currentScreenImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
   }
 }

@@ -13,6 +13,27 @@ import java.util.Map;
 import java.util.Set;
 
 public class Graphics {
+
+  static final Color[] pico8Palette = {
+    Color.web("#000000"),
+    Color.web("#1D2B53"),
+    Color.web("#7E2553"),
+    Color.web("#008751"),
+    Color.web("#AB5236"),
+    Color.web("#5F574F"),
+    Color.web("#C2C3C7"),
+    Color.web("#FFF1E8"),
+    Color.web("#FF004D"),
+    Color.web("#FFA300"),
+    Color.web("#FFEC27"),
+    Color.web("#00E436"),
+    Color.web("#29ADFF"),
+    Color.web("#83769C"),
+    Color.web("#FF77A8"),
+    Color.web("#FFCCAA")
+  };
+
+  static public Color[] palette = pico8Palette.clone();
   
   static Vec.Int cam = Vec.ofInt(0, 0);
   
