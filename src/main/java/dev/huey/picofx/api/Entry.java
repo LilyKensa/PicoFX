@@ -347,12 +347,12 @@ public class Entry {
   }
   
   void render() {
+    useScreenB = !useScreenB;
+
     if (inFantasy) {
       fantasy.render();
     }
     else if (!paused) {
-      useScreenB = !useScreenB;
-
       if (game != null) {
         game.render();
       }
