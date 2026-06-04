@@ -26,10 +26,10 @@ Just get the app running, and you can enjoy the games!
 
 | Key                | Usage                |
 |--------------------|----------------------|
-| `Esc`              | Pause / Resume       |
-| `F11`              | Toggle fullscreen    |
+| `P`                | Pause / Resume       |
+| `F`                | Toggle fullscreen    |
 | `Ctrl` + `R`       | Reload the game      |
-| `Ctrl` + `C`       | Stop the game        |
+| `Ctrl` + `Q`       | Stop the game        |
 | `Ctrl` + Any Digit | Choose between games |
 
 The current games are:

@@ -67,3 +67,7 @@ jlink {
 jlinkZip {
     group = 'distribution'
 }
+
+run {
+    jvmArgs(['--enable-native-access=javafx.media,javafx.graphics'])
+}
