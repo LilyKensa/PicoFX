@@ -8,7 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
 public class TestGame implements Game {
-    Vec pos = Vec.of(64, 64);
+    Vec pos;
 
     @Override
     public String getId() {
@@ -22,7 +22,7 @@ public class TestGame implements Game {
 
     @Override
     public void start() {
-
+        pos = Vec.of(64, 64);
     }
 
     @Override
